@@ -1,0 +1,121 @@
+<!-- @format -->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ITQA Work Tracker</title>
+
+    <!--
+    EXTERNAL CSS FILE
+    -----------------
+    This line tells the browser to load styles from styles.css
+  -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>ITQA Package Tracking</h1>
+
+    <div class="container">
+      <!-- DATA ENTRY FORM -->
+      <form id="entryForm">
+        <div>
+          <label for="date">Date</label>
+          <input type="date" id="date" />
+        </div>
+
+        <div>
+          <label for="tracking">Tracking Number</label>
+          <input type="text" id="tracking" placeholder="Tracking Number" />
+        </div>
+
+        <div>
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" placeholder="First name" />
+        </div>
+
+        <div>
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" placeholder="Last name" />
+        </div>
+
+        <div>
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="555-555-5555" />
+        </div>
+
+        <div class="full-width">
+          <label for="corrections">Address Corrections Made</label>
+          <textarea id="corrections" rows="3"></textarea>
+        </div>
+
+        <div>
+          <label for="callStatus">Customer Contact</label>
+          <select id="callStatus">
+            <option value="">Select one</option>
+            <option>Called – Talked to Customer</option>
+            <option>Called – Left Voicemail</option>
+            <option>Called – No Answer</option>
+            <option>Did Not Call</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="notes">Additional Notes</label>
+          <textarea id="notes" rows="2"></textarea>
+        </div>
+<div id="formError" class="error-message hidden">
+  Please enter Tracking Number, First Name, and Last Name.
+</div>
+        <div class="full-width">
+         <button type="submit">Save Entry</button>
+        </div>
+      </form>
+
+      <!-- SAVED ENTRIES TABLE -->
+      <h2>Saved Entries</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Tracking #</th>
+            <th>Customer</th>
+            <th>Corrections</th>
+            <th>Contact</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2026-02-03</td>
+            <td>1Z999AA10123456784</td>
+            <td>Jane Doe <span class="tag">Previous Customer</span></td>
+            <td>Corrected street suffix and ZIP code</td>
+            <td>Talked to Customer</td>
+            <td>Confirmed delivery instructions</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!--
+    JAVASCRIPT FILE
+    ---------------
+    This connects your HTML to script.js where logic will live
+  -->
+    <script src="script.js"></script>
+
+    <!-- HISTORY MODAL -->
+    <div id="historyModal" class="modal hidden">
+      <div class="modal-content">
+        <span id="closeModal" class="close">&times;</span>
+        <h2>Customer Correction History</h2>
+        <div id="historyContent"></div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>

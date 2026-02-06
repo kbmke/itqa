@@ -1,0 +1,121 @@
+document.addEventListener("DOMContentLoaded", () => {
+  let entries = JSON.parse(localStorage.getItem("itqaEntries")) || [];
+
+  const form = document.getElementById("entryForm");
+  const dateInput = document.getElementById("date");
+  const trackingInput = document.getElementById("tracking");
+  const firstNameInput = document.getElementById("firstName");
+  const lastNameInput = document.getElementById("lastName");
+  const phoneInput = document.getElementById("phone");
+  const correctionsInput = document.getElementById("corrections");
+  const callStatusInput = document.getElementById("callStatus");
+  const notesInput = document.getElementById("notes");
+  const tableBody = document.querySelector("tbody");
+const formError = document.getElementById("formError");
+  /* ===============================
+     FORM SUBMIT
+  =============================== */
+  form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  // Clear previous errors
+  formError.classList.add("hidden");
+  trackingInput.classList.remove("input-error");
+  firstNameInput.classList.remove("input-error");
+  lastNameInput.classList.remove("input-error");
+
+  const tracking = trackingInput.value.trim();
+  const firstName = firstNameInput.value.trim();
+  const lastName = lastNameInput.value.trim();
+
+  let hasError = false;
+
+  if (!tracking) {
+    trackingInput.classList.add("input-error");
+    hasError = true;
+  }
+
+  if (!firstName) {
+    firstNameInput.classList.add("input-error");
+    hasError = true;
+  }
+
+  if (!lastName) {
+    lastNameInput.classList.add("input-error");
+    hasError = true;
+  }
+
+  if (hasError) {
+    formError.classList.remove("hidden");
+    return;
+  }
+
+  entries.push({
+    date: dateInput.value,
+    tracking,
+    firstName: firstName.toLowerCase(),
+    lastName: lastName.toLowerCase(),
+    phone: phoneInput.value.trim(),
+    corrections: correctionsInput.value.trim(),
+    callStatus: callStatusInput.value,
+    notes: notesInput.value.trim(),
+  });
+
+  saveToStorage();
+  loadTable();
+
+  form.reset();
+  dateInput.valueAsDate = new Date();
+});
+
+  /* ===============================
+     STORAGE
+  =============================== */
+  function saveToStorage() {
+    localStorage.setItem("itqaEntries", JSON.stringify(entries));
+  }
+
+  /* ===============================
+     TABLE RENDER
+  =============================== */
+  function loadTable() {
+    tableBody.innerHTML = "";
+
+    entries.forEach((entry, index) => {
+      const isRepeatCustomer = entries.some(
+        (e, i) =>
+          i < index &&
+          e.firstName === entry.firstName &&
+          e.lastName === entry.lastName &&
+          e.phone === entry.phone
+      );
+
+      addRow(entry, isRepeatCustomer);
+    });
+  }
+
+  function addRow(entry, isRepeatCustomer) {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${entry.date}</td>
+      <td>${entry.tracking}</td>
+      <td>
+        <span class="${isRepeatCustomer ? "repeat-customer" : ""}">
+          ${entry.firstName} ${entry.lastName}
+        </span>
+      </td>
+      <td>${entry.corrections}</td>
+      <td>${entry.callStatus}</td>
+      <td>${entry.notes}</td>
+    `;
+
+    tableBody.appendChild(row);
+  }
+
+  /* ===============================
+     INITIAL LOAD
+  =============================== */
+  dateInput.valueAsDate = new Date();
+  loadTable();
+});
