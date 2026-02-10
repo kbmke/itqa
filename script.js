@@ -10,11 +10,35 @@ document.addEventListener("DOMContentLoaded", () => {
   const correctionsInput = document.getElementById("corrections");
   const callStatusInput = document.getElementById("callStatus");
   const notesInput = document.getElementById("notes");
-  const tableBody = document.querySelector("tbody");
+  
+  const tableBody = document.querySelector("table tbody");
 const formError = document.getElementById("formError");
-  /* ===============================
+const searchInput = document.getElementById("search");
+// guard against missing elements
+if (!form || !tableBody || !formError || !searchInput) {
+  console.error("Required DOM elements missing");
+  return;
+}
+
+/* ===============================
      FORM SUBMIT
   =============================== */
+searchInput.addEventListener("input", () => {
+  const query = searchInput.value.toLowerCase().trim();
+
+  if (!query) {
+    loadTable(); // show all entries when search is empty
+    return;
+  }
+
+  const filteredEntries = entries.filter((entry) =>
+    entry.tracking.toLowerCase().includes(query) ||
+    entry.firstName.includes(query) ||
+    entry.lastName.includes(query)
+  );
+
+  loadTable(filteredEntries);
+});
   form.addEventListener("submit", (e) => {
   e.preventDefault();
 
@@ -61,8 +85,9 @@ const formError = document.getElementById("formError");
     notes: notesInput.value.trim(),
   });
 
-  saveToStorage();
-  loadTable();
+saveToStorage();
+searchInput.value = ""; // clear search
+loadTable();
 
   form.reset();
   dateInput.valueAsDate = new Date();
@@ -78,37 +103,37 @@ const formError = document.getElementById("formError");
   /* ===============================
      TABLE RENDER
   =============================== */
-  function loadTable() {
-    tableBody.innerHTML = "";
+function loadTable(filteredEntries = entries) {
+  tableBody.innerHTML = "";
 
-    entries.forEach((entry, index) => {
-      const isRepeatCustomer = entries.some(
-        (e, i) =>
-          i < index &&
-          e.firstName === entry.firstName &&
-          e.lastName === entry.lastName &&
-          e.phone === entry.phone
-      );
+  filteredEntries.forEach((entry, index) => {
+    const isRepeatCustomer = entries.some(
+      (e, i) =>
+        i < index &&
+        e.firstName === entry.firstName &&
+        e.lastName === entry.lastName &&
+        e.phone === entry.phone
+    );
 
-      addRow(entry, isRepeatCustomer);
-    });
-  }
+    function addRow(entry, isRepeatCustomer, index) {
+}
 
-  function addRow(entry, isRepeatCustomer) {
-    const row = document.createElement("tr");
-
-    row.innerHTML = `
-      <td>${entry.date}</td>
-      <td>${entry.tracking}</td>
-      <td>
-        <span class="${isRepeatCustomer ? "repeat-customer" : ""}">
-          ${entry.firstName} ${entry.lastName}
-        </span>
-      </td>
-      <td>${entry.corrections}</td>
-      <td>${entry.callStatus}</td>
-      <td>${entry.notes}</td>
-    `;
+  row.innerHTML = `
+  <td>${entry.date}</td>
+  <td>${entry.tracking}</td>
+  <td>
+    <span class="${isRepeatCustomer ? "repeat-customer" : ""}">
+      ${entry.firstName} ${entry.lastName}
+    </span>
+  </td>
+  <td>${entry.corrections}</td>
+  <td>${entry.callStatus}</td>
+  <td>${entry.notes}</td>
+  <td>
+    <button class="edit-btn" data-index="${index}">Edit</button>
+    <button class="delete-btn" data-index="${index}">Delete</button>
+  </td>
+`;
 
     tableBody.appendChild(row);
   }

@@ -65,6 +65,7 @@
           <label for="notes">Additional Notes</label>
           <textarea id="notes" rows="2"></textarea>
         </div>
+<!-- SEARCH -->
 <div id="formError" class="error-message hidden">
   Please enter Tracking Number, First Name, and Last Name.
 </div>
@@ -72,42 +73,36 @@
          <button type="submit">Save Entry</button>
         </div>
       </form>
-
+<div class="full-width">
+ <!-- Search -->
+  <label for="search">Search (Tracking or Name)</label>
+  <input
+    type="text"
+    id="search"
+    placeholder="Type tracking number or name..."
+  />
+</div>
       <!-- SAVED ENTRIES TABLE -->
-      <h2>Saved Entries</h2>
+    <h2>Saved Entries</h2>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Tracking #</th>
-            <th>Customer</th>
-            <th>Corrections</th>
-            <th>Contact</th>
-            <th>Notes</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>2026-02-03</td>
-            <td>1Z999AA10123456784</td>
-            <td>Jane Doe <span class="tag">Previous Customer</span></td>
-            <td>Corrected street suffix and ZIP code</td>
-            <td>Talked to Customer</td>
-            <td>Confirmed delivery instructions</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+<table>
+  <thead>
+    <tr>
+      <th>Date</th>
+      <th>Tracking #</th>
+      <th>Customer</th>
+      <th>Corrections</th>
+      <th>Contact</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Rows added dynamically by JavaScript -->
+  </tbody>
+</table>
 
-    <!--
-    JAVASCRIPT FILE
-    ---------------
-    This connects your HTML to script.js where logic will live
-  -->
-    <script src="script.js"></script>
 
-    <!-- HISTORY MODAL -->
+       <!-- HISTORY MODAL -->
     <div id="historyModal" class="modal hidden">
       <div class="modal-content">
         <span id="closeModal" class="close">&times;</span>
@@ -115,7 +110,11 @@
         <div id="historyContent"></div>
       </div>
     </div>
-
+    <!--
+    JAVASCRIPT FILE
+    ---------------
+    This connects your HTML to script.js where logic will live
+  -->
     <script src="script.js"></script>
   </body>
 </html>
