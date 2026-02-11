@@ -19,7 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let lastDeletedEntry = null;
   let lastDeletedIndex = null;
-
+  let editingRowIndex = null;
+let undoTimeout = null;
+}
   /* ===============================
      GUARD
   =============================== */
@@ -113,7 +115,6 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ===============================
      TABLE EVENTS (EDIT / DELETE)
   =============================== */
-  let undoTimeout = null;
 
   tableBody.addEventListener("click", (e) => {
     if (!e.target.dataset.index) return;
@@ -143,9 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
     /* EDIT */
 
     // “editing lock” (prevents multiple rows editing)
-  let editingRowIndex = null;
- 
- 
+  
   if (e.target.classList.contains("edit-btn")) {
   if (editingRowIndex !== null) return; // block multiple edits
 
