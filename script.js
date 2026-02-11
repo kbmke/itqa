@@ -14,7 +14,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const formError = document.getElementById("formError");
   const searchInput = document.getElementById("search");
 
-  if (!form || !tableBody || !formError || !searchInput) {
+  const undoBar = document.getElementById("undoBar");
+  const undoBtn = document.getElementById("undoBtn");
+
+  let lastDeletedEntry = null;
+  let lastDeletedIndex = null;
+
+  /* ===============================
+     GUARD
+  =============================== */
+  if (
+    !form ||
+    !tableBody ||
+    !formError ||
+    !searchInput ||
+    !undoBar ||
+    !undoBtn
+  ) {
     console.error("Required DOM elements missing");
     return;
   }
@@ -34,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
       (e) =>
         e.tracking.toLowerCase().includes(query) ||
         e.firstName.includes(query) ||
-        e.lastName.includes(query)
+        e.lastName.includes(query),
     );
 
     loadTable(filtered);
@@ -97,35 +113,95 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ===============================
      TABLE EVENTS (EDIT / DELETE)
   =============================== */
+  let undoTimeout = null;
+
   tableBody.addEventListener("click", (e) => {
-    const index = e.target.dataset.index;
-    if (index === undefined) return;
+    if (!e.target.dataset.index) return;
 
+    const index = Number(e.target.dataset.index);
+
+    /* DELETE */
     if (e.target.classList.contains("delete-btn")) {
-      if (!confirm("Delete this entry?")) return;
+      lastDeletedEntry = entries[index];
+      lastDeletedIndex = index;
+// Disable delete while editing
+      if (editingRowIndex !== null) return;
       entries.splice(index, 1);
       saveToStorage();
       loadTable();
+
+      undoBar.classList.remove("hidden");
+
+      clearTimeout(undoTimeout);
+      undoTimeout = setTimeout(() => {
+        undoBar.classList.add("hidden");
+        lastDeletedEntry = null;
+        lastDeletedIndex = null;
+      }, 5000);
     }
 
-    if (e.target.classList.contains("edit-btn")) {
-      const entry = entries[index];
+    /* EDIT */
 
-      dateInput.value = entry.date;
-      trackingInput.value = entry.tracking;
-      firstNameInput.value = entry.firstName;
-      lastNameInput.value = entry.lastName;
-      phoneInput.value = entry.phone;
-      correctionsInput.value = entry.corrections;
-      callStatusInput.value = entry.callStatus;
-      notesInput.value = entry.notes;
+    // “editing lock” (prevents multiple rows editing)
+  let editingRowIndex = null;
+ 
+ 
+  if (e.target.classList.contains("edit-btn")) {
+  if (editingRowIndex !== null) return; // block multiple edits
 
-      entries.splice(index, 1);
-      saveToStorage();
-      loadTable();
-    }
-  });
+  const row = e.target.closest("tr");
+  const entry = entries[index];
+  editingRowIndex = index;
 
+  row.innerHTML = `
+    <td><input type="date" value="${entry.date}"></td>
+    <td><input value="${entry.tracking}"></td>
+    <td>
+      <input value="${entry.firstName}" placeholder="First">
+      <input value="${entry.lastName}" placeholder="Last">
+    </td>
+    <td><input value="${entry.corrections}"></td>
+    <td>
+      <select>
+        <option value="">Select</option>
+        <option ${entry.callStatus === "Called – Talked to Customer" ? "selected" : ""}>Called – Talked to Customer</option>
+        <option ${entry.callStatus === "Called – Left Voicemail" ? "selected" : ""}>Called – Left Voicemail</option>
+        <option ${entry.callStatus === "Called – No Answer" ? "selected" : ""}>Called – No Answer</option>
+        <option ${entry.callStatus === "Did Not Call" ? "selected" : ""}>Did Not Call</option>
+      </select>
+    </td>
+    <td><input value="${entry.notes}"></td>
+    <td>
+      <button class="save-edit" data-index="${index}">Save</button>
+      <button class="cancel-edit">Cancel</button>
+    </td>
+  `;
+  // SAVE INLINE EDITS
+  if (e.target.classList.contains("save-edit")) {
+  const row = e.target.closest("tr");
+  const inputs = row.querySelectorAll("input, select");
+
+  entries[index] = {
+    date: inputs[0].value,
+    tracking: inputs[1].value,
+    firstName: inputs[2].value.toLowerCase(),
+    lastName: inputs[3].value.toLowerCase(),
+    corrections: inputs[4].value,
+    callStatus: inputs[5].value,
+    notes: inputs[6].value,
+    phone: entries[index].phone // preserve phone if not edited
+  };
+
+  saveToStorage();
+  editingRowIndex = null;
+  loadTable();
+}
+// CANCEL INLINE EDITS
+if (e.target.classList.contains("cancel-edit")) {
+  editingRowIndex = null;
+  loadTable(); // discard changes
+}
+}
   /* ===============================
      STORAGE
   =============================== */
@@ -136,6 +212,17 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ===============================
      TABLE RENDER
   =============================== */
+  undoBtn.addEventListener("click", () => {
+    if (lastDeletedEntry === null) return;
+
+    entries.splice(lastDeletedIndex, 0, lastDeletedEntry);
+    saveToStorage();
+    loadTable();
+
+    lastDeletedEntry = null;
+    lastDeletedIndex = null;
+    undoBar.classList.add("hidden");
+  });
   function loadTable(list = entries) {
     tableBody.innerHTML = "";
 
@@ -149,11 +236,11 @@ document.addEventListener("DOMContentLoaded", () => {
         <td>${entry.corrections}</td>
         <td>${entry.callStatus}</td>
         <td>${entry.notes}</td>
-        <td>
-          <button class="edit-btn" data-index="${index}">Edit</button>
-          <button class="delete-btn" data-index="${index}">Delete</button>
-        </td>
-      `;
+
+ <td>
+  <button class="edit-btn" data-index="${index}">Edit</button>
+  <button class="delete-btn" data-index="${index}">Delete</button>
+</td>      `;
 
       tableBody.appendChild(row);
     });
