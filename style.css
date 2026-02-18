@@ -96,7 +96,7 @@ h1 {
   text-align: center;
   font-size: 4rem;
   color: var(--orange);
-  background-color: var(--purp);
+  background-color: red;
   margin: 0 auto;
   padding: 1rem;
   border-radius: 1.9rem;
