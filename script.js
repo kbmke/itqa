@@ -27,14 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const undoBar = document.getElementById("undoBar");
   const undoBtn = document.getElementById("undoBtn");
 
-  if (
-    !form ||
-    !tableBody ||
-    !formError ||
-    !searchInput ||
-    !undoBar ||
-    !undoBtn
-  ) {
+  if (!form || !tableBody || !formError || !searchInput || !undoBar || !undoBtn) {
     console.error("Required DOM elements missing");
     return;
   }
@@ -46,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (editingRowIndex !== null) return;
 
     const query = searchInput.value.toLowerCase().trim();
+
     if (!query) {
       loadTable();
       return;
@@ -55,14 +49,14 @@ document.addEventListener("DOMContentLoaded", () => {
       (e) =>
         e.tracking.toLowerCase().includes(query) ||
         e.firstName.includes(query) ||
-        e.lastName.includes(query),
+        e.lastName.includes(query)
     );
 
     loadTable(filtered);
   });
 
   /* ===============================
-     FORM SUBMIT (NEW ENTRY ONLY)
+     FORM SUBMIT (ADD NEW ONLY)
   =============================== */
   form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -82,10 +76,12 @@ document.addEventListener("DOMContentLoaded", () => {
       trackingInput.classList.add("input-error");
       hasError = true;
     }
+
     if (!firstName) {
       firstNameInput.classList.add("input-error");
       hasError = true;
     }
+
     if (!lastName) {
       lastNameInput.classList.add("input-error");
       hasError = true;
@@ -116,16 +112,17 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* ===============================
-     TABLE EVENTS
+     TABLE CLICK HANDLER
   =============================== */
   tableBody.addEventListener("click", (e) => {
-    if (!e.target.dataset.index) return;
-    const index = e.target.dataset.index !== undefined
-  ? Number(e.target.dataset.index)
-  : null;
+    const index =
+      e.target.dataset.index !== undefined
+        ? Number(e.target.dataset.index)
+        : null;
 
-    /* DELETE */
-    
+    /* ===================== DELETE ===================== */
+    if (e.target.classList.contains("delete-btn")) {
+      if (editingRowIndex !== null) return;
 
       lastDeletedEntry = entries[index];
       lastDeletedIndex = index;
@@ -136,6 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       undoBar.classList.remove("hidden");
       clearTimeout(undoTimeout);
+
       undoTimeout = setTimeout(() => {
         undoBar.classList.add("hidden");
         lastDeletedEntry = null;
@@ -143,13 +141,14 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 5000);
     }
 
-    /* START INLINE EDIT */
+    /* ===================== START EDIT ===================== */
     if (e.target.classList.contains("edit-btn")) {
       if (editingRowIndex !== null) return;
 
       const row = e.target.closest("tr");
       const entry = entries[index];
       editingRowIndex = index;
+
       row.classList.add("editing-row");
 
       row.innerHTML = `
@@ -177,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
     }
 
-    /* SAVE INLINE EDIT */
+    /* ===================== SAVE EDIT ===================== */
     if (e.target.classList.contains("save-edit")) {
       const row = e.target.closest("tr");
       const inputs = row.querySelectorAll("input, select");
@@ -198,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
       loadTable();
     }
 
-    /* CANCEL INLINE EDIT */
+    /* ===================== CANCEL EDIT ===================== */
     if (e.target.classList.contains("cancel-edit")) {
       editingRowIndex = null;
       loadTable();
