@@ -90,6 +90,13 @@ h6 {
 
 }
 
+.playwrite-nz-basic-reg {
+  font-family: "Playwrite NZ Basic", cursive;
+  font-optical-sizing: auto;
+  font-weight: 200;
+  font-style: normal;
+}
+
 body {
   font-family: Arial, sans-serif;
   background: #b5b4ff;
