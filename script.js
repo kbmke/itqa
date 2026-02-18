@@ -27,7 +27,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const undoBar = document.getElementById("undoBar");
   const undoBtn = document.getElementById("undoBtn");
 
-  if (!form || !tableBody || !formError || !searchInput || !undoBar || !undoBtn) {
+  if (
+    !form ||
+    !tableBody ||
+    !formError ||
+    !searchInput ||
+    !undoBar ||
+    !undoBtn
+  ) {
     console.error("Required DOM elements missing");
     return;
   }
@@ -48,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
       (e) =>
         e.tracking.toLowerCase().includes(query) ||
         e.firstName.includes(query) ||
-        e.lastName.includes(query)
+        e.lastName.includes(query),
     );
 
     loadTable(filtered);
@@ -113,11 +120,12 @@ document.addEventListener("DOMContentLoaded", () => {
   =============================== */
   tableBody.addEventListener("click", (e) => {
     if (!e.target.dataset.index) return;
-    const index = Number(e.target.dataset.index);
+    const index = e.target.dataset.index !== undefined
+  ? Number(e.target.dataset.index)
+  : null;
 
     /* DELETE */
-    if (e.target.classList.contains("delete-btn")) {
-      if (editingRowIndex !== null) return;
+    
 
       lastDeletedEntry = entries[index];
       lastDeletedIndex = index;
@@ -142,6 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const row = e.target.closest("tr");
       const entry = entries[index];
       editingRowIndex = index;
+      row.classList.add("editing-row");
 
       row.innerHTML = `
         <td><input type="date" value="${entry.date}"></td>
