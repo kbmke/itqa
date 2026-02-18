@@ -79,10 +79,15 @@ h6 {
   isolation: isolate;
 }
 
+
 :root {
   font-size: 14px;
   --purp: #7C86FF;
   --orange: #FF8904;
+  --lav: #C6D2FF;
+  --sherbert: #FFD6A7;
+  --stone: #D6D3D1;
+
 }
 
 body {
